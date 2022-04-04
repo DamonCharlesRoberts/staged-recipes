@@ -1,0 +1,94 @@
+{% set version = '0.1-11' %}
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
+
+package:
+  name: r-btllasso
+  version: {{ version|replace("-", "_") }}
+
+source:
+  url:
+    - {{ cran_mirror }}/src/contrib/BTLLasso_{{ version }}.tar.gz
+    - {{ cran_mirror }}/src/contrib/Archive/BTLLasso/BTLLasso_{{ version }}.tar.gz
+  sha256: 532f67ef00a4680d48f8745726a03989bc858e3af7de14bbe4ec77729e04e9db
+
+build:
+  merge_build_host: True  # [win]
+  number: 0
+  rpaths:
+    - lib/R/lib/
+    - lib/
+
+requirements:
+  build:
+    - {{ compiler('c') }}              # [not win]
+    - {{ compiler('m2w64_c') }}        # [win]
+    - {{ compiler('cxx') }}            # [not win]
+    - {{ compiler('m2w64_cxx') }}      # [win]
+    - {{ posix }}filesystem        # [win]
+    - {{ posix }}make
+    - {{ posix }}sed               # [win]
+    - {{ posix }}coreutils         # [win]
+    - {{ posix }}zip               # [win]
+    - cross-r-base {{ r_base }}    # [build_platform != target_platform]
+  host:
+    - r-base
+    - r-matrix
+    - r-rcpp >=0.11.3
+    - r-rcpparmadillo
+    - r-teachingdemos
+    - r-psychotools
+    - r-stringr
+  run:
+    - r-base
+    - {{ native }}gcc-libs         # [win]
+    - r-matrix
+    - r-rcpp >=0.11.3
+    - r-rcpparmadillo
+    - r-teachingdemos
+    - r-psychotools
+    - r-stringr
+
+test:
+  commands:
+    - $R -e "library('BTLLasso')"           # [not win]
+    - "\"%R%\" -e \"library('BTLLasso')\""  # [win]
+
+about:
+  home: https://CRAN.R-project.org/package=BTLLasso
+  license: GPL-2.0-or-later
+  summary: Performs 'BTLLasso' as described by Schauberger and Tutz (2019) <doi:10.18637/jss.v088.i09>
+    and Schauberger and Tutz (2017) <doi:10.1177/1471082X17693086>. BTLLasso is a method
+    to include different types of variables in paired comparison models and, therefore,
+    to allow for heterogeneity between subjects. Variables can be subject-specific,
+    object-specific and subject-object-specific and can have an influence on the attractiveness/strength
+    of the objects. Suitable L1 penalty terms are used to cluster certain effects and
+    to reduce the complexity of the models.
+  license_family: GPL2
+  license_file:
+    - '{{ environ["PREFIX"] }}/lib/R/share/licenses/GPL-2'
+
+extra:
+  recipe-maintainers:
+    - conda-forge/r
+    - damoncharlesroberts
+
+# Package: BTLLasso
+# Type: Package
+# Title: Modelling Heterogeneity in Paired Comparison Data
+# Version: 0.1-11
+# Date: 2020-10-05
+# Author: Gunther Schauberger
+# Maintainer: Gunther Schauberger <gunther.schauberger@tum.de>
+# Description: Performs 'BTLLasso' as described by Schauberger and Tutz (2019) <doi:10.18637/jss.v088.i09> and Schauberger and Tutz (2017) <doi:10.1177/1471082X17693086>. BTLLasso is a method to include different types of variables in paired comparison models and, therefore, to allow for heterogeneity between subjects. Variables can be subject-specific, object-specific and subject-object-specific and can have an influence on the attractiveness/strength of the objects. Suitable L1 penalty terms are used to cluster certain effects and to reduce the complexity of the models.
+# License: GPL (>= 2)
+# Imports: Rcpp (>= 0.11.3), stringr, psychotools
+# Depends: Matrix, parallel, TeachingDemos
+# Suggests: gvcm.cat
+# LinkingTo: Rcpp, RcppArmadillo
+# SystemRequirements: C++11
+# RoxygenNote: 7.1.1
+# NeedsCompilation: yes
+# Packaged: 2020-10-07 06:57:24 UTC; ge29weh
+# Repository: CRAN
+# Date/Publication: 2020-10-07 08:00:02 UTC
